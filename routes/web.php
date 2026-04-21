@@ -46,6 +46,11 @@ Route::resource("backend/user", UserController::class, [
     "as" => "backend",
 ])->middleware("auth");
 
+// Route untuk Customer
+Route::resource("backend/customer", CustomerController::class, [
+    "as" => "backend",
+])->middleware("auth");
+
 // Route untuk laporan user
 Route::get("backend/laporan/formuser", [UserController::class, "formUser"])
     ->name("backend.laporan.formuser")
