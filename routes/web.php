@@ -144,8 +144,13 @@ Route::middleware("is.customer")->group(function () {
         CustomerController::class,
         "updateAkun",
     ])->name("customer.updateakun");
-});
-// Route untuk menambahkan produk ke keranjang
-Route::post('add-to-cart/{id}', [OrderController::class, 'addToCart'])->name('order.addToCart');
-Route::get('cart', [OrderController::class, 'viewCart'])->name('order.cart');
+
+    // Route untuk menambahkan produk ke keranjang
+    Route::post("add-to-cart/{id}", [
+        OrderController::class,
+        "addToCart",
+    ])->name("order.addToCart");
+    Route::get("cart", [OrderController::class, "viewCart"])->name(
+        "order.cart",
+    );
 });
