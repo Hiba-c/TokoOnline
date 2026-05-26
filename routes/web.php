@@ -8,6 +8,9 @@ use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\RajaOngkirController;
+use App\Http\Controllers\RajaOngkirControllerV2;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -153,4 +156,73 @@ Route::middleware("is.customer")->group(function () {
     Route::get("cart", [OrderController::class, "viewCart"])->name(
         "order.cart",
     );
+
+    Route::post("cart/update/{id}", [
+        OrderController::class,
+        "updateCart",
+    ])->name("order.updateCart");
+    Route::post("remove/{id}", [
+        OrderController::class,
+        "removeFromCart",
+    ])->name("order.remove");
+
+    Route::post("select-shipping", [
+        OrderController::class,
+        "selectShipping",
+    ])->name("order.select-shipping");
+    Route::post("update-ongkir", [
+        OrderController::class,
+        "updateOngkir",
+    ])->name("order.update-ongkir");
+    Route::get("select-payment", [
+        OrderController::class,
+        "selectPayment",
+    ])->name("order.selectpayment");
+
+    Route::post("order/complete", [OrderController::class, "complete"])->name(
+        "order.complete",
+    );
+    Route::get("history", [OrderController::class, "orderHistory"])->name(
+        "order.history",
+    );
 });
+
+// Route untuk mendapatkan daftar ongkir
+Route::get("/list-ongkir", function () {
+    $response = Http::withHeaders([
+        "key" => "33S9fgW844c6677b076eca94evmCaqRa",
+    ])->get("https://rajaongkir.komerce.id/api/v1/destination/province"); //ganti 'province' atau 'city'
+    dd($response->json());
+});
+
+Route::get("/cek-ongkir", function () {
+    return view("ongkir");
+});
+
+Route::get("/provinces", [RajaOngkirController::class, "getProvinces"]);
+Route::get("/cities", [RajaOngkirController::class, "get_Cities"]);
+Route::post("/cost", [RajaOngkirController::class, "getCost"]);
+
+Route::get("/cek", [RajaOngkirController::class, "index"]);
+//route to get cities based on province ID App\Http\Controllers\
+Route::get("/cities/{provinceId}", [RajaOngkirController::class, "getCities"]);
+//route to get districts based on city ID
+Route::get("/districts/{cityId}", [
+    RajaOngkirController::class,
+    "getDistricts",
+]);
+//route to post shipping cost
+Route::post("/check-ongkir", [RajaOngkirController::class, "checkOngkir"]);
+
+// cek_raja_ongkir_v2
+Route::get("/cek-ongkir", function () {
+    return view("cek-ongkir");
+});
+Route::get("/ongkir/get-destination", [
+    RajaOngkirControllerV2::class,
+    "getDestination",
+]);
+Route::post("/ongkir/calculate", [
+    RajaOngkirControllerV2::class,
+    "calculateOngkir",
+]);

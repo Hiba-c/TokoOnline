@@ -3,12 +3,15 @@
 
 <head>
     <meta charset="utf-8">
+    <!-- rajaongkir request AJAX -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('image/icon_univ_bsi.png') }}">
-    <title>tokoonline</title>
+    <title>Toko Online</title>
 
     <!-- Google font -->
     <link href="https://fonts.googleapis.com/css?family=Hind:400,700" rel="stylesheet">
@@ -74,7 +77,8 @@
                     <ul class="header-btns">
                         <!-- Cart -->
                         <li class="header-cart dropdown default-dropdown">
-                            <a href="{{ route('order.cart') }}">
+                            <!-- dihapus/dijadikan komentar <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true"> -->
+                                <a href="{{ route('order.cart')}} ">
                                 <div class="header-btns-icon">
                                     <i class="fa fa-shopping-cart"></i>
                                 </div>
@@ -83,9 +87,9 @@
                         </li>
                         <!-- /Cart -->
 
-                        @if (Auth::check())
+                         @if (Auth::check())
                         <!-- Account -->
-                         <li class="header-account dropdown default-dropdown">
+                        <li class="header-account dropdown default-dropdown">
                             <div class="dropdown-toggle" role="button" data-toggle="dropdown" aria-expanded="true">
                                 <div class="header-btns-icon">
                                     <i class="fa fa-user-o"></i>
@@ -95,7 +99,7 @@
                             </div>
                             <ul class="custom-menu">
                                 <li><a href="{{ route('customer.akun', ['id' => Auth::user()->id]) }}"><i class="fa fa-user-o"></i> Akun Saya</a></li>
-                                <li><a href="#"><i class="fa fa-check"></i> History</a></li>
+                                <li><a href="{{ route('order.history') }}"><i class="fa fa-check"></i> History</a></li>
                                 <li>
                                     <a href="#" onclick="event.preventDefault(); document.getElementById('keluar-app').submit();"><i class="fa fa-power-off"></i> Keluar
                                     </a>
@@ -103,7 +107,7 @@
                                     <form id="keluar-app" action="{{ route('customer.logout') }}" method="POST" class="d-none">
                                         @csrf
                                     </form>
-                                <!-- form keluar app end -->
+                                    <!-- form keluar app end -->
                                 </li>
                             </ul>
                         </li>
@@ -114,12 +118,11 @@
                                     <i class="fa fa-user-o"></i>
                                 </div>
                                 <strong class="text-uppercase">Akun Saya<i class="fa fa-caret-down"></i></strong>
-                                </div>
+                            </div>
                             <a href="{{ route('auth.redirect') }}" class="text-uppercase">Login</a>
                         </li>
-                    <!-- /Account -->
-                    @endif
-
+                        <!-- /Account -->
+                        @endif
 
                         <!-- Mobile nav toggle-->
                         <li class="nav-toggle">
@@ -423,6 +426,9 @@
     <script src="{{ asset('frontend/js/nouislider.min.js') }}"></script>
     <script src="{{ asset('frontend/js/jquery.zoom.min.js') }}"></script>
     <script src="{{ asset('frontend/js/main.js') }}"></script>
+
+    <!-- rajaongkir Select2 dan AJAX -->
+    @stack('scripts')
 
 </body>
 
