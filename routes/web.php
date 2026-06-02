@@ -226,3 +226,9 @@ Route::post("/ongkir/calculate", [
     RajaOngkirControllerV2::class,
     "calculateOngkir",
 ]);
+
+//Manajemen Pemesanan
+Route::get('/pesanan/proses', [OrderController::class, 'statusProses'])->name('pesanan.proses');
+Route::get('/pesanan/detail/{id}', [OrderController::class, 'statusDetail'])->name('pesanan.detail');
+Route::put('/pesanan/update/{id}', [OrderController::class, 'statusUpdate'])->name('pesanan.update');
+Route::get('/pesanan/invoice/{id}', [OrderController::class, 'invoiceBackend'])->name('pesanan.invoice');
