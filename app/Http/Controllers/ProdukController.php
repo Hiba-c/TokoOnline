@@ -441,4 +441,23 @@ class ProdukController extends Controller
             "produk" => $produk,
         ]);
     }
+
+    public function berandaBackend()
+    {
+        // 1. Ambil data produk dari database
+        // (Gunakan limit agar grafik tidak terlalu padat jika produk sangat banyak)
+        $dataProduk = Produk::select("nama_produk", "stok")->limit(10)->get();
+
+        // 2. Pecah data menjadi 2 array terpisah untuk dilempar ke grafik
+        $nama_produk = $dataProduk->pluck("nama_produk");
+        $stok_produk = $dataProduk->pluck("stok");
+
+        return view(
+            "backend.v_beranda.index",
+            [
+                "judul" => "Halaman Beranda",
+            ],
+            compact("nama_produk", "stok_produk"),
+        );
+    }
 }

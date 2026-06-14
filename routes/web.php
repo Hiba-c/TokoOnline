@@ -228,7 +228,32 @@ Route::post("/ongkir/calculate", [
 ]);
 
 //Manajemen Pemesanan
-Route::get('/pesanan/proses', [OrderController::class, 'statusProses'])->name('pesanan.proses');
-Route::get('/pesanan/detail/{id}', [OrderController::class, 'statusDetail'])->name('pesanan.detail');
-Route::put('/pesanan/update/{id}', [OrderController::class, 'statusUpdate'])->name('pesanan.update');
-Route::get('/pesanan/invoice/{id}', [OrderController::class, 'invoiceBackend'])->name('pesanan.invoice');
+Route::get("/pesanan/proses", [OrderController::class, "statusProses"])->name(
+    "pesanan.proses",
+);
+Route::get("/pesanan/detail/{id}", [
+    OrderController::class,
+    "statusDetail",
+])->name("pesanan.detail");
+Route::put("/pesanan/update/{id}", [
+    OrderController::class,
+    "statusUpdate",
+])->name("pesanan.update");
+Route::get("/pesanan/invoice/{id}", [
+    OrderController::class,
+    "invoiceBackend",
+])->name("pesanan.invoice");
+
+// Route untuk laporan pesanan
+Route::get("backend/laporan/formpesanan", [
+    OrderController::class,
+    "formPesanan",
+])
+    ->name("backend.laporan.formpesanan")
+    ->middleware("auth");
+Route::post("backend/laporan/cetakpesanan", [
+    OrderController::class,
+    "cetakPesanan",
+])
+    ->name("backend.laporan.cetakpesanan")
+    ->middleware("auth");

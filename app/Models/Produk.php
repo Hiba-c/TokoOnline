@@ -11,7 +11,7 @@ class Produk extends Model
 
     public $timestamps = true; // FIX
     protected $table = "produk";
-    protected $guarded = ['id'];
+    protected $guarded = ["id"];
 
     public function kategori()
     {
@@ -25,6 +25,6 @@ class Produk extends Model
 
     public function fotoProduk()
     {
-        return $this->hasMany(FotoProduk::class, 'produk_id'); // RELASI YANG COCOK
+        return $this->hasMany(FotoProduk::class, "produk_id"); // RELASI YANG COCOK
     }
 }

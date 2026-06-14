@@ -12,8 +12,6 @@ use Illuminate\Support\Facades\Http;
 use App\Models\Kategori;
 use Symfony\Contracts\Service\Attribute\Required;
 
-
-
 class OrderController extends Controller
 {
     public function addToCart($id)
@@ -356,67 +354,118 @@ class OrderController extends Controller
         return view("v_order.history", compact("orders"));
     }
     public function statusProses()
-        {
-            //backend
-            $order = Order::whereIn('status', ['Paid', 'Kirim'])->orderBy('id', 'desc')->get();
-            return view('backend.v_pesanan.proses', [
-                'judul' => 'Pesanan',
-                'subJudul' => 'Pesanan Proses',
-                'index' => $order
-            ]);
+    {
+        //backend
+        $order = Order::whereIn("status", ["Paid", "Kirim"])
+            ->orderBy("id", "desc")
+            ->get();
+        return view("backend.v_pesanan.proses", [
+            "judul" => "Pesanan",
+            "subJudul" => "Pesanan Proses",
+            "index" => $order,
+        ]);
+    }
+
+    public function statusSelesai()
+    {
+        //backend
+        $order = Order::where("status", "Selesai")
+            ->orderBy("id", "desc")
+            ->get();
+        return view("backend.v_pesanan.selesai", [
+            "judul" => "Pesanan",
+            "subJudul" => "Pesanan Proses",
+            "judul" => "Data Transaksi",
+            "index" => $order,
+        ]);
+    }
+
+    public function statusDetail($id)
+    {
+        $order = Order::findOrFail($id);
+        return view("backend.v_pesanan.detail", [
+            "judul" => "Pesanan",
+            "subJudul" => "Pesanan Proses",
+            "judul" => "Data Transaksi",
+            "order" => $order,
+        ]);
+    }
+
+    public function statusUpdate(Request $request, string $id)
+    {
+        $order = Order::findOrFail($id);
+        $rules = [
+            "alamat" => "required",
+        ];
+        if ($request->status != $order->status) {
+            $rules["status"] = "required";
+        }
+        if ($request->noresi != $order->noresi) {
+            $rules["noresi"] = "required";
+        }
+        if ($request->pos != $order->pos) {
+            $rules["pos"] = "required";
+        }
+        $validatedData = $request->validate($rules);
+        Order::where("id", $id)->update($validatedData);
+        return redirect()
+            ->route("pesanan.proses")
+            ->with("success", "Data berhasil diperbaharui");
+    }
+
+    public function invoiceBackend($id)
+    {
+        $order = Order::findOrFail($id);
+        return view("backend.v_pesanan.invoice", [
+            "judul" => "Pesanan",
+            "subJudul" => "Pesanan Proses",
+            "judul" => "Data Transaksi",
+            "order" => $order,
+        ]);
+    }
+
+    public function formPesanan()
+    {
+        return view("backend.v_pesanan.form", [
+            "judul" => "Laporan Data Pesanan",
+        ]);
+    }
+    public function cetakPesanan(Request $request)
+    {
+        // Menambahkan aturan validasi
+        $request->validate(
+            [
+                "tanggal_awal" => "required|date",
+                "tanggal_akhir" => "required|date|after_or_equal:tanggal_awal",
+            ],
+            [
+                "tanggal_awal.required" => "Tanggal Awal harus diisi.",
+                "tanggal_akhir.required" => "Tanggal Akhir harus diisi.",
+                "tanggal_akhir.after_or_equal" =>
+                    "Tanggal Akhir harus lebih besar atau sama dengan Tanggal Awal.",
+            ],
+        );
+
+        $tanggalAwal = $request->input("tanggal_awal");
+        $tanggalAkhir = $request->input("tanggal_akhir");
+
+        $query = Order::whereBetween("created_at", [
+            $tanggalAwal,
+            $tanggalAkhir,
+        ])->orderBy("id", "desc");
+
+        $status = $request->status; // bisa 'Paid', 'Kirim', 'Selesai'
+
+        if (!empty($status)) {
+            $query->where("status", $status);
         }
 
-        public function statusSelesai()
-        {
-            //backend
-            $order = Order::where('status', 'Selesai')->orderBy('id', 'desc')->get();
-            return view('backend.v_pesanan.selesai', [
-                'judul' => 'Pesanan',
-                'subJudul' => 'Pesanan Proses',
-                'judul' => 'Data Transaksi',
-                'index' => $order
-            ]);
-        }
-
-        public function statusDetail($id)
-        {
-            $order = Order::findOrFail($id);
-            return view('backend.v_pesanan.detail', [
-                'judul' => 'Pesanan',
-                'subJudul' => 'Pesanan Proses',
-                'judul' => 'Data Transaksi',
-                'order' => $order,
-            ]);
-        }
-
-        public function statusUpdate(Request $request, string $id)
-        {
-            $order = Order::findOrFail($id);
-            $rules = [
-                'alamat' => 'required',
-            ];
-            if ($request->status != $order->status) {
-                $rules['status'] = 'required';
-            }
-            if ($request->noresi != $order->noresi) {
-                $rules['noresi'] = 'required';
-            }
-            if ($request->pos != $order->pos) {
-                $rules['pos'] = 'required';
-            }
-            $validatedData = $request->validate($rules);
-            Order::where('id', $id)->update($validatedData);
-            return redirect()->route('pesanan.proses')->with('success', 'Data berhasil diperbaharui');
-        }
-
-        public function invoiceBackend($id)
-        {
-            $order = Order::findOrFail($id);
-            return view('backend.v_pesanan.invoice', [
-                'judul' => 'Pesanan',
-                'subJudul' => 'Pesanan Proses',
-                'judul' => 'Data Transaksi',
-                'order' => $order,
-            ]);
-        }
+        $order = $query->get();
+        return view("backend.v_pesanan.cetak", [
+            "judul" => "Laporan Pesanan",
+            "tanggalAwal" => $tanggalAwal,
+            "tanggalAkhir" => $tanggalAkhir,
+            "cetak" => $order,
+        ]);
+    }
 }
